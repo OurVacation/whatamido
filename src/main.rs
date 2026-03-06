@@ -15,18 +15,7 @@ fn main()
 {
     println!("🚀 whatamido CLI 시작\n");
 
-    let mut plan_arr: Vec<Plan> = Vec::new();
-    let file_path = "test.json"; // 파일 경로 지정
-
-    println!("📂 '{}' 파일에서 계획을 불러오는 중...", file_path);
-
-    match fs::read_to_string(file_path){
-        Ok(json_content) => parse_plan(&json_content, &mut plan_arr),
-        Err(e) => {
-            println!("⚠️ 파일을 읽을 수 없습니다. 빈 목록으로 시작합니다. ({})", e);
-        }
-    } // json 파일 읽기 -> 성공하면 serde_json::from_str<'a, T>로 파싱 -> 내 Plan 구조체로 재
-
+    let mut plan_arr = load_plans_from_file("plans.json");
     println!("=== 📅 오늘 불러온 계획 목록 ===");
     for plan in &plan_arr {
         println!("- [{}] {} ~ {}",
@@ -84,17 +73,44 @@ fn get_user_input(prompt: &str) -> String {
     input.trim().to_string()
 }
 
-fn parse_plan(json_content : &str, plan_arr: &mut Vec<Plan>){
-    match serde_json::from_str::<Vec<FilePlan>>(&json_content){
-        Ok(parsed_plans) =>{
-            for fp in parsed_plans{
-                let new_plan = Plan::new(&fp.name, fp.start_time, fp.end_time);
-                plan_arr.push(new_plan);
+// fn parse_plan(json_content : &str, plan_arr: &mut Vec<Plan>){
+//     match serde_json::from_str::<Vec<FilePlan>>(&json_content){
+//         Ok(parsed_plans) =>{
+//             for fp in parsed_plans{
+//                 let new_plan = Plan::new(&fp.name, fp.start_time, fp.end_time);
+//                 plan_arr.push(new_plan);
+//             }
+//             println!("✅ 성공적으로 {}개의 계획을 불러왔습니다!\n", plan_arr.len());
+//         }
+//         Err(e) => {
+//             println!("❌ JSON 파싱 에러: 파일 내용이 올바른 형식이 아닙니다. ({})", e);
+//         }
+//     }
+// }
+// 원래 내가 했던 함수
+
+fn load_plans_from_file(file_path: &str) -> Vec<Plan> {
+    // 1. 반환할 빈 벡터를 생성합니다.
+    let mut plans = Vec::new();
+
+    // 2. 파일 읽기 시도
+    match fs::read_to_string(file_path) {
+        Ok(json_content) => {
+            // 3. 파일 읽기 성공 -> JSON 파싱 시도
+            match serde_json::from_str::<Vec<FilePlan>>(&json_content) {
+                Ok(parsed_plans) => {
+                    for fp in parsed_plans {
+                        plans.push(Plan::new(&fp.name, fp.start_time, fp.end_time));
+                    }
+                    println!("✅ '{}' 파일에서 {}개의 계획을 불러왔습니다!\n", file_path, plans.len());
+                }
+                Err(e) => println!("❌ JSON 파싱 에러: 파일 형식이 잘못되었습니다. ({})", e),
             }
-            println!("✅ 성공적으로 {}개의 계획을 불러왔습니다!\n", plan_arr.len());
         }
-        Err(e) => {
-            println!("❌ JSON 파싱 에러: 파일 내용이 올바른 형식이 아닙니다. ({})", e);
-        }
+        Err(e) => println!("⚠️ 파일을 읽을 수 없습니다. 빈 목록으로 시작합니다. ({})", e),
     }
+
+    // 4. 완성된(또는 비어있는) 벡터의 소유권을 반환합니다!
+    plans
 }
+// AI가 만든거 확실히 깔끔하다!

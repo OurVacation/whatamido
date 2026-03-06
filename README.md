@@ -12,7 +12,11 @@
 	- 왜 features=[] 이렇게 대괄호로 표시할까? => 이건 해당 라이브러리 선택 기능 중 한번에 여러개를 켜기 위해 TOML 문법의 리스트(`[]`)를 활용하는 것.
 
 2. `serde` , `serde_json` 사용 방법 : 모든 연관함수까지는 아니더라도 알게 된 건 적어두자
-	-
+	1. from_str
+		```rust
+		pub fn from_str<'a, T>(s: &'a str) -> Result<T>where
+    	T: Deserialize<'a>,
+		```
 	-
 ### 해당 단계 피드백
 (내용을 입력하세요)

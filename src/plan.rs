@@ -1,5 +1,5 @@
 use chrono::{DateTime,Local};
-
+use serde::Deserialize;
 
 #[derive(Debug, PartialEq)]
 pub enum State
@@ -17,6 +17,14 @@ pub struct Plan
 	pub start_time : DateTime<Local>,
 	pub end_time : DateTime<Local>,
 	pub progress: u8,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct FilePlan
+{
+	pub name: String,
+	pub start_time: DateTime<Local>,
+	pub end_time: DateTime<Local>,
 }
 
 impl Plan

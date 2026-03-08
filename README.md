@@ -14,9 +14,14 @@
 2. `serde` , `serde_json` 사용 방법 : 모든 연관함수까지는 아니더라도 알게 된 건 적어두자
 	1. from_str
 		```rust
-		pub fn from_str<'a, T>(s: &'a str) -> Result<T>where
+		pub fn from_str<'a, T>(s: &'a str) -> Result<T>
+		where
     	T: Deserialize<'a>,
 		```
+		이 함수가 사실상 json -> 구조체로 파싱을 진행하는 함수인데, 내 경우에는 여러가지 계획을 리스트로 묶은 형태이기 때문에 `from_str<Vec<FilePlan>>` 으로 명시해줬다.
+		간단하게 말하면, 그냥 문자열로 해석된 json을 제네릭 인자의 값으로 바꿔주는 함수이다.
+		근데 여기서 입력으로 들어온 json 정보와 내 구조체 간의 모양을 어느정도 일치하도록 잡아줘야 오류가 안난다.
+		그렇지만 정말 모든 요소들을 1:1 로 매칭시킬 수 없기 때문에 이런 저런
 	-
 ### 해당 단계 피드백
 (내용을 입력하세요)
